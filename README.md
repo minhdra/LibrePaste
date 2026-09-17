@@ -39,6 +39,7 @@
 - **App Appearance Controls**: Seamlessly toggle between System Default, Always Light, and Always Dark appearance modes.
 - **Privacy by Design**: Automatically ignores password managers (1Password, Bitwarden, Apple Keychain, KeePassXC), transient/concealed pasteboards, and user-excluded apps.
 - **Robust SQLite Storage**: High-performance SQLite database in WAL mode with configurable retention and item limits. Pinned clips and clips assigned to pinboards are protected from automatic pruning.
+- **GitHub Self-Updates**: Checks this fork's releases, validates the downloaded app, replaces the installed copy after quitting, and relaunches automatically. Automatic checks can be disabled in Settings.
 
 ## Keyboard Shortcuts
 

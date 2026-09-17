@@ -39,6 +39,7 @@
 - **Tùy biến giao diện (Appearance)**: Tùy chỉnh linh hoạt giữa System Default, Always Light và Always Dark.
 - **Bảo vệ quyền riêng tư**: Tự động bỏ qua password managers (1Password, Bitwarden, Apple Keychain, KeePassXC), transient/concealed pasteboards và các app trong danh sách exclude.
 - **Lưu trữ SQLite WAL tối ưu**: Hỗ trợ giới hạn số lượng và thời gian lưu trữ; clip đã ghim hoặc được đưa vào pinboard luôn được bảo vệ khỏi cơ chế tự động dọn dẹp.
+- **Tự cập nhật từ GitHub**: Tải và xác minh bản phát hành mới, tự thay thế ứng dụng sau khi thoát rồi mở lại. Có thể tắt kiểm tra cập nhật tự động trong Settings.
 
 ## Phím tắt
 

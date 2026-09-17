@@ -250,7 +250,7 @@ public struct AboutSettingsTab: View {
                         updateMessage = L10n.tr("Latest version!")
                     case let .updateAvailable(release):
                         updateMessage = L10n.tr("Version %@ available", release.version)
-                        NSWorkspace.shared.open(release.pageURL)
+                        GitHubUpdateService.shared.promptForUpdate(release)
                     }
                 }
             } catch {

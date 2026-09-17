@@ -7236,6 +7236,20 @@
         "vi" : { "stringUnit" : { "state" : "translated", "value" : "Phiên bản %@ hiện đã có trên GitHub." } }
       }
     },
+    "Install and Relaunch" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Install and Relaunch" } },
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Cài đặt và khởi động lại" } }
+      }
+    },
+    "Update installation failed" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Update installation failed" } },
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Cài đặt bản cập nhật thất bại" } }
+      }
+    },
     "You're up to date! LibrePaste %@ is the latest version." : {
       "extractionState" : "manual",
       "localizations" : {
