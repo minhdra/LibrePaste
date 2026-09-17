@@ -124,6 +124,7 @@ public final class DatabaseManager: @unchecked Sendable {
             "ignoreTransient": "true",
             "playSoundOnPaste": "true",
             "pasteSoundName": "Tink",
+            "automaticUpdateChecks": "true",
             "enableSensitiveMasking": "true",
             "maskApiKeys": "true",
             "maskCreditCards": "true",
@@ -143,6 +144,16 @@ public final class DatabaseManager: @unchecked Sendable {
                 sqlite3_step(stmt)
             }
             sqlite3_finalize(stmt)
+        }
+
+        // Roll back the temporary unlimited-default migration used by an early
+        // custom build. Retention remains enabled, while pinned/pinboard clips
+        // are protected by the pruning queries below.
+        let durableDefaultsMigration = "durableStorageDefaultsV1"
+        if getSettingInternal(durableDefaultsMigration) != nil {
+            _ = executeSimple("UPDATE settings SET value = '30' WHERE key = 'historyDays' AND value = '0';")
+            _ = executeSimple("UPDATE settings SET value = '500' WHERE key = 'maxItems' AND value = '0';")
+            _ = executeSimple("DELETE FROM settings WHERE key = 'durableStorageDefaultsV1';")
         }
         
         // Migrate legacy setting values if needed
@@ -548,7 +559,7 @@ public final class DatabaseManager: @unchecked Sendable {
     public func clearAll() {
         queue.sync {
             // Find and delete unpinned image files
-            let selectSQL = "SELECT image_path FROM clips WHERE pinned = 0 AND image_path IS NOT NULL;"
+            let selectSQL = "SELECT image_path FROM clips WHERE pinned = 0 AND pinboard_id IS NULL AND image_path IS NOT NULL;"
             var stmt: OpaquePointer?
             if sqlite3_prepare_v2(db, selectSQL, -1, &stmt, nil) == SQLITE_OK {
                 while sqlite3_step(stmt) == SQLITE_ROW {
@@ -563,7 +574,7 @@ public final class DatabaseManager: @unchecked Sendable {
             
             ThumbnailManager.shared.clearAllDecryptedTempFiles()
             
-            _ = executeSimple("DELETE FROM clips WHERE pinned = 0;")
+            _ = executeSimple("DELETE FROM clips WHERE pinned = 0 AND pinboard_id IS NULL;")
             _ = executeSimple("VACUUM;")
         }
     }
@@ -577,7 +588,7 @@ public final class DatabaseManager: @unchecked Sendable {
         if historyDays > 0 {
             let cutoff = (Date().timeIntervalSince1970 - Double(historyDays * 86400)) * 1000
             
-            let selectImagesSQL = "SELECT image_path FROM clips WHERE pinned = 0 AND created_at < ? AND image_path IS NOT NULL;"
+            let selectImagesSQL = "SELECT image_path FROM clips WHERE pinned = 0 AND pinboard_id IS NULL AND created_at < ? AND image_path IS NOT NULL;"
             var stmt: OpaquePointer?
             if sqlite3_prepare_v2(db, selectImagesSQL, -1, &stmt, nil) == SQLITE_OK {
                 sqlite3_bind_double(stmt, 1, cutoff)
@@ -591,7 +602,7 @@ public final class DatabaseManager: @unchecked Sendable {
             }
             sqlite3_finalize(stmt)
             
-            let deleteSQL = "DELETE FROM clips WHERE pinned = 0 AND created_at < ?;"
+            let deleteSQL = "DELETE FROM clips WHERE pinned = 0 AND pinboard_id IS NULL AND created_at < ?;"
             var delStmt: OpaquePointer?
             if sqlite3_prepare_v2(db, deleteSQL, -1, &delStmt, nil) == SQLITE_OK {
                 sqlite3_bind_double(delStmt, 1, cutoff)
@@ -605,8 +616,8 @@ public final class DatabaseManager: @unchecked Sendable {
         let maxItems = max(50, Int(maxSetting ?? "500") ?? 500)
         
         let overflowImagesSQL = """
-        SELECT image_path FROM clips WHERE pinned = 0 AND image_path IS NOT NULL AND id NOT IN (
-            SELECT id FROM clips WHERE pinned = 0 ORDER BY created_at DESC LIMIT ?
+        SELECT image_path FROM clips WHERE pinned = 0 AND pinboard_id IS NULL AND image_path IS NOT NULL AND id NOT IN (
+            SELECT id FROM clips WHERE pinned = 0 AND pinboard_id IS NULL ORDER BY created_at DESC LIMIT ?
         );
         """
         var imgStmt: OpaquePointer?
@@ -623,8 +634,8 @@ public final class DatabaseManager: @unchecked Sendable {
         sqlite3_finalize(imgStmt)
         
         let deleteOverflowSQL = """
-        DELETE FROM clips WHERE pinned = 0 AND id NOT IN (
-            SELECT id FROM clips WHERE pinned = 0 ORDER BY created_at DESC LIMIT ?
+        DELETE FROM clips WHERE pinned = 0 AND pinboard_id IS NULL AND id NOT IN (
+            SELECT id FROM clips WHERE pinned = 0 AND pinboard_id IS NULL ORDER BY created_at DESC LIMIT ?
         );
         """
         var delOverStmt: OpaquePointer?
@@ -945,7 +956,7 @@ public final class DatabaseManager: @unchecked Sendable {
             let cutoff = (Date().timeIntervalSince1970 - Double(olderThanHours * 3600)) * 1000
             
             // Delete associated images & thumbnails & decrypted temp files for purged sensitive clips
-            let selectImagesSQL = "SELECT image_path FROM clips WHERE pinned = 0 AND is_sensitive = 1 AND created_at < ? AND image_path IS NOT NULL;"
+            let selectImagesSQL = "SELECT image_path FROM clips WHERE pinned = 0 AND pinboard_id IS NULL AND is_sensitive = 1 AND created_at < ? AND image_path IS NOT NULL;"
             var imgStmt: OpaquePointer?
             if sqlite3_prepare_v2(db, selectImagesSQL, -1, &imgStmt, nil) == SQLITE_OK {
                 sqlite3_bind_double(imgStmt, 1, cutoff)
@@ -959,7 +970,7 @@ public final class DatabaseManager: @unchecked Sendable {
             }
             sqlite3_finalize(imgStmt)
             
-            let deleteSQL = "DELETE FROM clips WHERE pinned = 0 AND is_sensitive = 1 AND created_at < ?;"
+            let deleteSQL = "DELETE FROM clips WHERE pinned = 0 AND pinboard_id IS NULL AND is_sensitive = 1 AND created_at < ?;"
             var stmt: OpaquePointer?
             if sqlite3_prepare_v2(db, deleteSQL, -1, &stmt, nil) == SQLITE_OK {
                 sqlite3_bind_double(stmt, 1, cutoff)

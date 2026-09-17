@@ -23,7 +23,7 @@ public struct SidebarView: View {
     public let onReorder: (([Int64]) -> Void)?
     public let onAssignClip: ((Int64, Int64?) -> Void)?
     public let onEnqueueClip: ((Int64) -> Void)?
-    
+
     @Binding public var isCollapsed: Bool
     
     @State private var showingCreateSheet = false
@@ -420,8 +420,8 @@ private struct PinboardItemRowView: View {
     private var isClipDropTarget: Bool {
         clipTargetId == pinboard.id
     }
-    
-    var body: some View {
+
+    private var rowContent: some View {
         HStack(spacing: 8) {
             ZStack {
                 Circle()
@@ -454,50 +454,104 @@ private struct PinboardItemRowView: View {
                 }
             }
         }
-        .foregroundStyle(isSelected ? Color.accentColor : Color.primary)
-        .padding(.horizontal, isCollapsed ? 6 : 8)
-        .padding(.vertical, 5)
-        .frame(maxWidth: isCollapsed ? 34 : .infinity)
+    }
+
+    private var dragPreview: some View {
+        HStack(spacing: 6) {
+            Circle()
+                .fill(pinboard.swiftUIColor)
+                .frame(width: 8, height: 8)
+            Text(pinboard.name)
+                .font(.system(size: 12, weight: .semibold))
+                .foregroundStyle(.primary)
+        }
+        .padding(.horizontal, 10)
+        .padding(.vertical, 6)
         .background(
-            RoundedRectangle(cornerRadius: 8)
-                .fill(
-                    isClipDropTarget
-                        ? pinboard.swiftUIColor.opacity(0.24)
-                        : (isSelected
-                            ? Color.accentColor.opacity(0.16)
-                            : (isHovered ? Color.primary.opacity(0.08) : Color.clear))
-                )
+            RoundedRectangle(cornerRadius: 8, style: .continuous)
+                .fill(.ultraThickMaterial)
+                .shadow(color: Color.black.opacity(0.18), radius: 6, x: 0, y: 2)
         )
         .overlay(
-            RoundedRectangle(cornerRadius: 8)
-                .strokeBorder(
-                    isClipDropTarget
-                        ? pinboard.swiftUIColor
-                        : (isSelected ? Color.accentColor.opacity(0.35) : (isHovered ? Color.primary.opacity(0.12) : Color.clear)),
-                    lineWidth: 1
-                )
+            RoundedRectangle(cornerRadius: 8, style: .continuous)
+                .strokeBorder(Color.primary.opacity(0.1), lineWidth: 1)
         )
-        .overlay(alignment: .top) {
-            if showTopLine {
-                ReorderInsertionLineView()
-                    .offset(y: -1)
+    }
+
+    @ViewBuilder
+    private var pinboardContextMenu: some View {
+        Button(L10n.tr("Edit Pinboard..."), action: onEdit)
+        if onMoveUp != nil || onMoveDown != nil {
+            Divider()
+            if let onMoveUp {
+                Button(L10n.tr("Move Up"), action: onMoveUp)
+            }
+            if let onMoveDown {
+                Button(L10n.tr("Move Down"), action: onMoveDown)
             }
         }
-        .overlay(alignment: .bottom) {
-            if showBottomLine {
-                ReorderInsertionLineView()
-                    .offset(y: 1)
+        Divider()
+        Button(role: .destructive, action: onDelete) {
+            Label(L10n.tr("Delete"), systemImage: "trash")
+        }
+    }
+
+    private var styledRow: some View {
+        rowContent
+            .foregroundStyle(isSelected ? Color.accentColor : Color.primary)
+            .padding(.horizontal, isCollapsed ? 6 : 8)
+            .padding(.vertical, 5)
+            .frame(maxWidth: isCollapsed ? 34 : .infinity)
+            .background(
+                RoundedRectangle(cornerRadius: 8)
+                    .fill(
+                        isClipDropTarget
+                            ? pinboard.swiftUIColor.opacity(0.24)
+                            : (isSelected
+                                ? Color.accentColor.opacity(0.16)
+                                : (isHovered ? Color.primary.opacity(0.08) : Color.clear))
+                    )
+            )
+    }
+
+    private var decoratedRow: some View {
+        styledRow
+            .overlay(
+                RoundedRectangle(cornerRadius: 8)
+                    .strokeBorder(
+                        isClipDropTarget
+                            ? pinboard.swiftUIColor
+                            : (isSelected ? Color.accentColor.opacity(0.35) : (isHovered ? Color.primary.opacity(0.12) : Color.clear)),
+                        lineWidth: 1
+                    )
+            )
+            .overlay(alignment: .top) {
+                if showTopLine {
+                    ReorderInsertionLineView()
+                        .offset(y: -1)
+                }
             }
-        }
-        .animation(.easeInOut(duration: 0.15), value: isClipDropTarget)
-        .animation(.easeInOut(duration: 0.12), value: showTopLine)
-        .animation(.easeInOut(duration: 0.12), value: showBottomLine)
-        .animation(.easeInOut(duration: 0.12), value: isHovered)
-        .contentShape(Rectangle())
-        .onHover { isHovered = $0 }
-        .onTapGesture {
-            onSelect()
-        }
+            .overlay(alignment: .bottom) {
+                if showBottomLine {
+                    ReorderInsertionLineView()
+                        .offset(y: 1)
+                }
+            }
+    }
+
+    private var interactiveRow: some View {
+        decoratedRow
+            .animation(.easeInOut(duration: 0.15), value: isClipDropTarget)
+            .animation(.easeInOut(duration: 0.12), value: showTopLine)
+            .animation(.easeInOut(duration: 0.12), value: showBottomLine)
+            .animation(.easeInOut(duration: 0.12), value: isHovered)
+            .contentShape(Rectangle())
+            .onHover { isHovered = $0 }
+            .onTapGesture(perform: onSelect)
+    }
+
+    var body: some View {
+        interactiveRow
         .accessibilityElement(children: .combine)
         .accessibilityLabel(pinboard.name)
         .accessibilityValue("\(count) items")
@@ -516,41 +570,10 @@ private struct PinboardItemRowView: View {
             )
         )
         .draggable(DragItemPayload(kind: .pinboard, id: pinboard.id)) {
-            HStack(spacing: 6) {
-                Circle()
-                    .fill(pinboard.swiftUIColor)
-                    .frame(width: 8, height: 8)
-                Text(pinboard.name)
-                    .font(.system(size: 12, weight: .semibold))
-                    .foregroundStyle(.primary)
-            }
-            .padding(.horizontal, 10)
-            .padding(.vertical, 6)
-            .background(
-                RoundedRectangle(cornerRadius: 8, style: .continuous)
-                    .fill(.ultraThickMaterial)
-                    .shadow(color: Color.black.opacity(0.18), radius: 6, x: 0, y: 2)
-            )
-            .overlay(
-                RoundedRectangle(cornerRadius: 8, style: .continuous)
-                    .strokeBorder(Color.primary.opacity(0.1), lineWidth: 1)
-            )
+            dragPreview
         }
         .contextMenu {
-            Button(L10n.tr("Edit Pinboard..."), action: onEdit)
-            if onMoveUp != nil || onMoveDown != nil {
-                Divider()
-                if let onMoveUp {
-                    Button(L10n.tr("Move Up"), action: onMoveUp)
-                }
-                if let onMoveDown {
-                    Button(L10n.tr("Move Down"), action: onMoveDown)
-                }
-            }
-            Divider()
-            Button(role: .destructive, action: onDelete) {
-                Label(L10n.tr("Delete"), systemImage: "trash")
-            }
+            pinboardContextMenu
         }
     }
 }

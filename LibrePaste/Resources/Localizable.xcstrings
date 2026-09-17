@@ -7159,6 +7159,83 @@
         }
       }
     },
+    "30 days" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "30 days" } },
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "30 ngày" } }
+      }
+    },
+    "500 clips" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "500 clips" } },
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "500 clip" } }
+      }
+    },
+    "Keep Forever (Default)" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Keep Forever (Default)" } },
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Lưu vĩnh viễn (Mặc định)" } }
+      }
+    },
+    "Unlimited (Default)" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Unlimited (Default)" } },
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Không giới hạn (Mặc định)" } }
+      }
+    },
+    "A new LibrePaste version is available" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "A new LibrePaste version is available" } },
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Đã có phiên bản LibrePaste mới" } }
+      }
+    },
+    "Automatically check for updates" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Automatically check for updates" } },
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Tự động kiểm tra cập nhật" } }
+      }
+    },
+    "Later" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Later" } },
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Để sau" } }
+      }
+    },
+    "Open Download Page" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Open Download Page" } },
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Mở trang tải xuống" } }
+      }
+    },
+    "Unable to check for updates" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Unable to check for updates" } },
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Không thể kiểm tra cập nhật" } }
+      }
+    },
+    "Version %@ available" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Version %@ available" } },
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Có phiên bản %@" } }
+      }
+    },
+    "Version %@ is available on GitHub." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Version %@ is available on GitHub." } },
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Phiên bản %@ hiện đã có trên GitHub." } }
+      }
+    },
     "You're up to date! LibrePaste %@ is the latest version." : {
       "extractionState" : "manual",
       "localizations" : {

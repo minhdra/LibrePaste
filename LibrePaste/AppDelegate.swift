@@ -66,6 +66,9 @@ public final class AppDelegate: NSObject, NSApplicationDelegate {
         
         // Setup PasteQueueManager
         PasteQueueManager.shared.setup()
+
+        // Check the configured GitHub fork at most once every 24 hours.
+        GitHubUpdateService.shared.performAutomaticCheckIfNeeded()
         
         // Register notifications
         NotificationCenter.default.addObserver(

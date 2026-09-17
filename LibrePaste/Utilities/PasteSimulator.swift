@@ -44,20 +44,14 @@ public final class PasteSimulator {
                 }
             }
         case .richtext:
-            if let rtf = clip.rtf, let rtfData = rtf.data(using: .utf8) {
+            if let rtf = clip.rtf, let rtfData = RichTextHelper.decodeRTFData(rtf) {
                 pasteboard.setData(rtfData, forType: .rtf)
             }
             if clip.content.contains("<") && clip.content.contains(">"),
                let htmlData = clip.content.data(using: .utf8) {
                 pasteboard.setData(htmlData, forType: .html)
             }
-            let plain: String
-            if clip.content.contains("<") && clip.content.contains(">") {
-                plain = clip.content.replacingOccurrences(of: "<[^>]+>", with: "", options: .regularExpression)
-                    .trimmingCharacters(in: .whitespacesAndNewlines)
-            } else {
-                plain = clip.content
-            }
+            let plain = RichTextHelper.stripHTML(clip.content)
             pasteboard.setString(plain, forType: .string)
         case .link:
             if let url = URL(string: clip.content) {
@@ -78,9 +72,8 @@ public final class PasteSimulator {
             return
         }
         let plain: String
-        if clip.type == .richtext && clip.content.contains("<") && clip.content.contains(">") {
-            plain = clip.content.replacingOccurrences(of: "<[^>]+>", with: "", options: .regularExpression)
-                .trimmingCharacters(in: .whitespacesAndNewlines)
+        if clip.type == .richtext {
+            plain = RichTextHelper.stripHTML(clip.content)
         } else {
             plain = clip.content
         }

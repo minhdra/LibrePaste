@@ -7,7 +7,7 @@
 
   [![macOS 14.0+](https://img.shields.io/badge/macOS-14.0%2B%20Sonoma%20%7C%20Sequoia-black?style=flat-square&logo=apple)](https://www.apple.com/macos/)
   [![Swift 5.9+](https://img.shields.io/badge/Swift-5.9%2B-orange?style=flat-square&logo=swift)](https://swift.org)
-  [![Universal Binary](https://img.shields.io/badge/Architecture-Universal%20(Apple%20Silicon%20%7C%20Intel)-blue?style=flat-square)](https://github.com/bihv/LibrePaste)
+  [![Universal Binary](https://img.shields.io/badge/Architecture-Universal%20(Apple%20Silicon%20%7C%20Intel)-blue?style=flat-square)](https://github.com/minhdra/LibrePaste)
   [![Languages](https://img.shields.io/badge/Languages-EN%20%7C%20VI-teal?style=flat-square)](LibrePaste/Resources/Localizable.xcstrings)
   [![License: MIT](https://img.shields.io/badge/License-MIT-green?style=flat-square)](LICENSE)
 
@@ -31,14 +31,14 @@
 - **Biometric Security & App Lock**: Lock clipboard history behind Touch ID, Apple Watch, or Mac password with customizable auto-lock timeouts and wake/sleep protection.
 - **AES-256 GCM Disk Encryption**: Stored media assets and sensitive cache payloads are encrypted using Apple CryptoKit with master keys secured in macOS Keychain.
 - **Rich Text & WYSIWYG Editor**: Built-in editor supporting plain text, styled RTF, sanitized HTML editing, and JSON formatting/validation.
-- **Instant Quick Look**: Press <kbd>Space</kbd> or <kbd>P</kbd> to inspect full-resolution media, structured JSON trees, color hex swatches, URL favicon previews, and word/character analytics.
-- **Smart Pinboards & Clip Renaming**: Pin favorite clippings, assign custom clip names/aliases (<kbd>R</kbd>), organize items into custom-colored boards, and filter by type (Text, Link, Image, Code, Color).
+- **Instant Quick Look**: Press <kbd>Space</kbd> or <kbd>⌥</kbd> + <kbd>P</kbd> to inspect full-resolution media, structured JSON trees, color hex swatches, URL favicon previews, and word/character analytics.
+- **Smart Pinboards & Clip Renaming**: Pin favorite clippings, assign custom clip names/aliases (<kbd>⌥</kbd> + <kbd>R</kbd>), organize items into custom-colored boards, and filter by type (Text, Link, Image, Code, Color).
 - **Automatic Favicon & Color Previews**: High-resolution favicon fetching and caching for web links, along with real-time color badge swatches and format conversions (HEX, RGB, HSL).
 - **Drag & Drop Integration**: Drag clippings directly into text editors, IDEs, browsers, Figma, or design tools with rich native data representations.
 - **Multi-Language Support**: Full internationalization with runtime switching between English (`en`) and Vietnamese (`vi`), alongside System Default.
 - **App Appearance Controls**: Seamlessly toggle between System Default, Always Light, and Always Dark appearance modes.
 - **Privacy by Design**: Automatically ignores password managers (1Password, Bitwarden, Apple Keychain, KeePassXC), transient/concealed pasteboards, and user-excluded apps.
-- **Robust SQLite Storage**: High-performance SQLite database in WAL mode with auto-pruning limits, configurable retention (7–365 days or forever), and one-click database vacuuming.
+- **Robust SQLite Storage**: High-performance SQLite database in WAL mode with configurable retention and item limits. Pinned clips and clips assigned to pinboards are protected from automatic pruning.
 
 ## Keyboard Shortcuts
 
@@ -56,13 +56,14 @@
 |---|---|
 | <kbd>↵</kbd> (Return) | Paste selected clip to active application |
 | <kbd>⌥</kbd> + <kbd>↵</kbd> | Paste selected clip as plain text (strips formatting) |
-| <kbd>1</kbd> – <kbd>9</kbd> | Quick paste clip by index position |
+| <kbd>⌘</kbd> + <kbd>1</kbd> – <kbd>9</kbd> | Quick paste clip by index position |
 | <kbd>←</kbd> / <kbd>→</kbd> or <kbd>↑</kbd> / <kbd>↓</kbd> | Navigate clip cards / list items |
 | <kbd>⌘</kbd> + <kbd>F</kbd> or <kbd>/</kbd> | Focus instant search bar |
-| <kbd>Space</kbd> or <kbd>P</kbd> | Toggle Quick Look preview window |
-| <kbd>R</kbd> | Rename selected clip with custom title |
-| <kbd>E</kbd> | Open Rich Text / HTML / JSON editor |
-| <kbd>Q</kbd> | Add to / Remove selected clip from Paste Queue |
+| Type any text | Automatically focus and enter text in the search bar |
+| <kbd>Space</kbd> or <kbd>⌥</kbd> + <kbd>P</kbd> | Toggle Quick Look preview window |
+| <kbd>⌥</kbd> + <kbd>R</kbd> | Rename selected clip with custom title |
+| <kbd>⌥</kbd> + <kbd>E</kbd> | Open Rich Text / HTML / JSON editor |
+| <kbd>⌥</kbd> + <kbd>Q</kbd> | Add to / Remove selected clip from Paste Queue |
 | <kbd>⌘</kbd> + <kbd>⌫</kbd> | Delete selected clip from history |
 | <kbd>Esc</kbd> | Clear search / Close floating panel |
 
@@ -86,7 +87,7 @@ LibrePaste adapts to any screen layout and workflow preference:
 
 The **Paste Queue** enables multi-item clipboard collection and sequential pasting:
 
-1. **Enqueue Clips**: Press <kbd>Q</kbd> on any clip in the history panel, or activate **Collect Mode** to automatically append new copies as you work.
+1. **Enqueue Clips**: Press <kbd>⌥</kbd> + <kbd>Q</kbd> on any clip in the history panel, or activate **Collect Mode** to automatically append new copies as you work.
 2. **Review in HUD**: The floating queue HUD displays queued items with remaining counts, drag-to-reorder, and skip capabilities.
 3. **Sequential Pasting**: Press <kbd>⌘</kbd> + <kbd>⌥</kbd> + <kbd>V</kbd> in your target document to paste items consecutively.
 4. **Flexible Behaviors**: Supports **FIFO** (First-In, First-Out), **LIFO** (Last-In, First-Out), and continuous **Cycle / Loop** mode.
@@ -127,7 +128,7 @@ The **Paste Queue** enables multi-item clipboard collection and sequential pasti
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/bihv/LibrePaste.git
+   git clone https://github.com/minhdra/LibrePaste.git
    cd LibrePaste
    ```
 

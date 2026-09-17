@@ -8,9 +8,23 @@
 import AppKit
 
 public final class RichTextHelper {
+    private nonisolated static let encodedRTFPrefix = "base64:"
+
+    public nonisolated static func encodeRTFData(_ data: Data) -> String {
+        encodedRTFPrefix + data.base64EncodedString()
+    }
+
+    public nonisolated static func decodeRTFData(_ storedValue: String) -> Data? {
+        if storedValue.hasPrefix(encodedRTFPrefix) {
+            return Data(base64Encoded: String(storedValue.dropFirst(encodedRTFPrefix.count)))
+        }
+        // Backwards compatibility for existing records that stored RTF text.
+        return storedValue.data(using: .utf8)
+    }
+
     public static func parse(content: String, rtf: String?, isDark: Bool) -> NSAttributedString? {
         // 1. Try RTF
-        if let rtf = rtf, let data = rtf.data(using: .utf8) {
+        if let rtf = rtf, let data = decodeRTFData(rtf) {
             if let attr = try? NSAttributedString(data: data, options: [.documentType: NSAttributedString.DocumentType.rtf], documentAttributes: nil) {
                 return adaptForDisplay(attr, isDark: isDark)
             }

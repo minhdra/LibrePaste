@@ -145,7 +145,7 @@ public struct AboutSettingsTab: View {
                 icon: "chevron.left.forwardslash.chevron.right",
                 title: L10n.tr("Source Code & GitHub"),
                 subtitle: L10n.tr("View repository and releases"),
-                url: "https://github.com/bihv/LibrePaste"
+                url: GitHubUpdateService.repositoryURL.absoluteString
             )
             
             Divider()
@@ -156,7 +156,7 @@ public struct AboutSettingsTab: View {
                 icon: "bubble.left.and.exclamationmark.bubble.right",
                 title: L10n.tr("Report an Issue or Feedback"),
                 subtitle: L10n.tr("Submit bug reports or feature suggestions"),
-                url: "https://github.com/bihv/LibrePaste/issues"
+                url: GitHubUpdateService.repositoryURL.appendingPathComponent("issues").absoluteString
             )
             
             Divider()
@@ -239,15 +239,30 @@ public struct AboutSettingsTab: View {
     private func checkForUpdates() {
         isCheckingUpdate = true
         updateMessage = L10n.tr("Checking...")
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) {
-            isCheckingUpdate = false
-            updateMessage = L10n.tr("Latest version!")
-            
-            DispatchQueue.main.asyncAfter(deadline: .now() + 2.5) {
-                withAnimation {
-                    updateMessage = nil
+
+        Task {
+            do {
+                let result = try await GitHubUpdateService.shared.checkForUpdates()
+                await MainActor.run {
+                    isCheckingUpdate = false
+                    switch result {
+                    case .upToDate:
+                        updateMessage = L10n.tr("Latest version!")
+                    case let .updateAvailable(release):
+                        updateMessage = L10n.tr("Version %@ available", release.version)
+                        NSWorkspace.shared.open(release.pageURL)
+                    }
                 }
+            } catch {
+                await MainActor.run {
+                    isCheckingUpdate = false
+                    updateMessage = L10n.tr("Unable to check for updates")
+                }
+            }
+
+            try? await Task.sleep(nanoseconds: 3_000_000_000)
+            await MainActor.run {
+                withAnimation { updateMessage = nil }
             }
         }
     }

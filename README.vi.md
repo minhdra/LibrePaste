@@ -7,7 +7,7 @@
 
   [![macOS 14.0+](https://img.shields.io/badge/macOS-14.0%2B%20Sonoma%20%7C%20Sequoia-black?style=flat-square&logo=apple)](https://www.apple.com/macos/)
   [![Swift 5.9+](https://img.shields.io/badge/Swift-5.9%2B-orange?style=flat-square&logo=swift)](https://swift.org)
-  [![Universal Binary](https://img.shields.io/badge/Architecture-Universal%20(Apple%20Silicon%20%7C%20Intel)-blue?style=flat-square)](https://github.com/bihv/LibrePaste)
+  [![Universal Binary](https://img.shields.io/badge/Architecture-Universal%20(Apple%20Silicon%20%7C%20Intel)-blue?style=flat-square)](https://github.com/minhdra/LibrePaste)
   [![Languages](https://img.shields.io/badge/Languages-EN%20%7C%20VI-teal?style=flat-square)](LibrePaste/Resources/Localizable.xcstrings)
   [![License: MIT](https://img.shields.io/badge/License-MIT-green?style=flat-square)](LICENSE)
 
@@ -31,14 +31,14 @@
 - **Bảo mật Touch ID & Khóa ứng dụng**: Khóa lịch sử clipboard bằng Touch ID, Apple Watch hoặc mật khẩu máy Mac, hỗ trợ tự động khóa sau timeout hoặc khi sleep/wake.
 - **Mã hóa AES-256 GCM**: Media assets và dữ liệu nhạy cảm được mã hóa an toàn bằng Apple CryptoKit với master key lưu trong macOS Keychain.
 - **Trình soạn thảo Rich Text & WYSIWYG**: Tích hợp sẵn editor hỗ trợ plain text, RTF, sanitized HTML và format/validate JSON ngay trong app.
-- **Quick Look tức thì**: Nhấn <kbd>Space</kbd> hoặc <kbd>P</kbd> để xem nhanh ảnh full-resolution, cấu trúc cây JSON, color swatch hex, favicon URL và thống kê word/character.
-- **Pinboard thông minh & Đổi tên Clip**: Ghim clip yêu thích, đổi alias/tên clip (<kbd>R</kbd>), phân loại theo board màu tùy chỉnh và filter theo type (Text, Link, Image, Code, Color).
+- **Quick Look tức thì**: Nhấn <kbd>Space</kbd> hoặc <kbd>⌥</kbd> + <kbd>P</kbd> để xem nhanh ảnh full-resolution, cấu trúc cây JSON, color swatch hex, favicon URL và thống kê word/character.
+- **Pinboard thông minh & Đổi tên Clip**: Ghim clip yêu thích, đổi alias/tên clip (<kbd>⌥</kbd> + <kbd>R</kbd>), phân loại theo board màu tùy chỉnh và filter theo type (Text, Link, Image, Code, Color).
 - **Tự động fetch Favicon & Preview màu sắc**: Tự động fetch favicon sắc nét cho URL, hiển thị swatch màu kèm chuyển đổi định dạng nhanh (HEX, RGB, HSL).
 - **Kéo & Thả (Drag & Drop)**: Hỗ trợ kéo thả trực tiếp clip vào text editor, IDE, browser, Figma hoặc các ứng dụng thiết kế.
 - **Hỗ trợ đa ngôn ngữ**: Hỗ trợ chuyển đổi trực tiếp giữa tiếng Anh (`en`), tiếng Việt (`vi`) hoặc theo System Default.
 - **Tùy biến giao diện (Appearance)**: Tùy chỉnh linh hoạt giữa System Default, Always Light và Always Dark.
 - **Bảo vệ quyền riêng tư**: Tự động bỏ qua password managers (1Password, Bitwarden, Apple Keychain, KeePassXC), transient/concealed pasteboards và các app trong danh sách exclude.
-- **Lưu trữ SQLite WAL tối ưu**: Sử dụng SQLite ở chế độ WAL hiệu năng cao, tự động dọn dẹp theo giới hạn số lượng, tùy chỉnh thời gian lưu trữ (7–365 ngày hoặc vĩnh viễn) và hỗ trợ vacuum database 1-click.
+- **Lưu trữ SQLite WAL tối ưu**: Hỗ trợ giới hạn số lượng và thời gian lưu trữ; clip đã ghim hoặc được đưa vào pinboard luôn được bảo vệ khỏi cơ chế tự động dọn dẹp.
 
 ## Phím tắt
 
@@ -56,13 +56,14 @@
 |---|---|
 | <kbd>↵</kbd> (Return) | Dán clip đang chọn vào ứng dụng hiện tại |
 | <kbd>⌥</kbd> + <kbd>↵</kbd> | Dán clip dưới dạng plain text (loại bỏ định dạng) |
-| <kbd>1</kbd> – <kbd>9</kbd> | Dán nhanh clip theo số thứ tự |
+| <kbd>⌘</kbd> + <kbd>1</kbd> – <kbd>9</kbd> | Dán nhanh clip theo số thứ tự |
 | <kbd>←</kbd> / <kbd>→</kbd> hoặc <kbd>↑</kbd> / <kbd>↓</kbd> | Điều hướng giữa các thẻ clip / danh sách |
 | <kbd>⌘</kbd> + <kbd>F</kbd> hoặc <kbd>/</kbd> | Focus vào thanh tìm kiếm |
-| <kbd>Space</kbd> hoặc <kbd>P</kbd> | Bật / tắt cửa sổ Quick Look |
-| <kbd>R</kbd> | Đổi tên / đặt alias cho clip đang chọn |
-| <kbd>E</kbd> | Mở trình soạn thảo Rich Text / HTML / JSON |
-| <kbd>Q</kbd> | Thêm vào / Bỏ clip khỏi Paste Queue |
+| Gõ văn bản bất kỳ | Tự động focus và nhập vào thanh tìm kiếm |
+| <kbd>Space</kbd> hoặc <kbd>⌥</kbd> + <kbd>P</kbd> | Bật / tắt cửa sổ Quick Look |
+| <kbd>⌥</kbd> + <kbd>R</kbd> | Đổi tên / đặt alias cho clip đang chọn |
+| <kbd>⌥</kbd> + <kbd>E</kbd> | Mở trình soạn thảo Rich Text / HTML / JSON |
+| <kbd>⌥</kbd> + <kbd>Q</kbd> | Thêm vào / Bỏ clip khỏi Paste Queue |
 | <kbd>⌘</kbd> + <kbd>⌫</kbd> | Xóa clip khỏi lịch sử |
 | <kbd>Esc</kbd> | Xóa tìm kiếm / Đóng panel |
 
@@ -86,7 +87,7 @@ LibrePaste linh hoạt thích ứng với mọi kích thước màn hình và ph
 
 Tính năng **Paste Queue** cho phép gom nhiều mục copy và dán tuần tự từng mục:
 
-1. **Thêm clip vào hàng đợi**: Nhấn <kbd>Q</kbd> trên bất kỳ clip nào trong panel lịch sử, hoặc bật **Collect Mode** để tự động gom mọi nội dung mới copy khi làm việc.
+1. **Thêm clip vào hàng đợi**: Nhấn <kbd>⌥</kbd> + <kbd>Q</kbd> trên bất kỳ clip nào trong panel lịch sử, hoặc bật **Collect Mode** để tự động gom mọi nội dung mới copy khi làm việc.
 2. **Quản lý trên HUD**: Bảng HUD nổi hiển thị danh sách các mục trong hàng đợi, số lượng còn lại, cho phép kéo thả sắp xếp lại thứ tự hoặc skip mục.
 3. **Dán tuần tự**: Nhấn <kbd>⌘</kbd> + <kbd>⌥</kbd> + <kbd>V</kbd> trong tài liệu hoặc ứng dụng đích để dán lần lượt từng mục.
 4. **Chế độ linh hoạt**: Hỗ trợ dán theo thứ tự **FIFO** (First-In, First-Out), **LIFO** (Last-In, First-Out) hoặc **Loop** lặp lại tuần hoàn.
@@ -127,7 +128,7 @@ Tính năng **Paste Queue** cho phép gom nhiều mục copy và dán tuần t�
 
 1. Clone repository:
    ```bash
-   git clone https://github.com/bihv/LibrePaste.git
+   git clone https://github.com/minhdra/LibrePaste.git
    cd LibrePaste
    ```
 

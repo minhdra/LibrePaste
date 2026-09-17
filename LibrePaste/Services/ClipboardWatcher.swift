@@ -247,7 +247,10 @@ public final class ClipboardWatcher {
         let text = pasteboard.string(forType: .string) ?? ""
         let html = pasteboard.string(forType: .html) ?? ""
         let rtfData = pasteboard.data(forType: .rtf)
-        let rtf = rtfData.flatMap { String(data: $0, encoding: .utf8) }
+        // RTF may contain arbitrary binary payloads (for example \bin image
+        // data), so storing it as UTF-8 can silently corrupt it. Preserve the
+        // exact bytes in a backwards-compatible encoded string instead.
+        let rtf = rtfData.map(RichTextHelper.encodeRTFData)
         
         // Strip whitespace and Object Replacement Character (\u{FFFC}) common in rich text apps
         let trimmedText = text
@@ -271,7 +274,7 @@ public final class ClipboardWatcher {
             if !trimmedText.isEmpty && isURL(trimmedText) {
                 type = .link
                 FaviconService.shared.prefetchFavicon(for: trimmedText)
-            } else if hasRichFormatting(html) || rtf != nil {
+            } else if !html.isEmpty || rtf != nil {
                 type = .richtext
             } else {
                 type = .text
@@ -283,7 +286,14 @@ public final class ClipboardWatcher {
                 return nil
             }
             
-            let content = (type == .link) ? trimmedText : (!html.isEmpty ? html : text)
+            let content: String
+            if type == .link {
+                content = trimmedText
+            } else if type == .richtext && !html.isEmpty {
+                content = html
+            } else {
+                content = text
+            }
             var preview = buildPreview(text: !text.isEmpty ? text : stripHTML(html))
             
             // Sensitive data detection
@@ -440,4 +450,3 @@ public final class ClipboardWatcher {
         return nil
     }
 }
-

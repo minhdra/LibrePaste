@@ -296,9 +296,10 @@ public struct ClipboardView: View {
             return nil
         }
         
-        // 4. Quick Paste 1-9 (top row or numpad)
+        // 4. Quick Paste Command+1-9 (top row or numpad). Plain digits are
+        // reserved for type-to-search so numeric clipboard content is searchable.
         if let num = Int(chars), num >= 1 && num <= 9 {
-            if !isSearching || isCommand {
+            if isCommand {
                 let targetIdx = num - 1
                 if targetIdx < store.filteredClips.count {
                     let clip = store.filteredClips[targetIdx]
@@ -322,8 +323,23 @@ public struct ClipboardView: View {
         }
         
         // --- Below this point: Field editor is NOT active ---
+
+        // 6. Type-to-search: printable text immediately becomes the query and
+        // focuses the search field. This also preserves the very first keystroke.
+        if !isCommand,
+           !isOption,
+           !event.modifierFlags.contains(.control),
+           let typedText = event.characters,
+           typedText.unicodeScalars.contains(where: {
+               !CharacterSet.controlCharacters.contains($0) &&
+               !CharacterSet.whitespacesAndNewlines.contains($0)
+           }) {
+            store.query.append(typedText)
+            store.isSearchFocused = true
+            return nil
+        }
         
-        // 6. Return / Enter (keyCode 36, 76)
+        // 7. Return / Enter (keyCode 36, 76)
         if event.keyCode == 36 || event.keyCode == 76 {
             if store.activeIndex >= 0 && store.activeIndex < store.filteredClips.count {
                 let clip = store.filteredClips[store.activeIndex]
@@ -332,7 +348,7 @@ public struct ClipboardView: View {
             }
         }
         
-        // 7. Arrow Navigation (Left/Up = previous, Right/Down = next)
+        // 8. Arrow Navigation (Left/Up = previous, Right/Down = next)
         if event.keyCode == 123 || event.keyCode == 126 { // Left or Up
             if store.activeIndex > 0 {
                 store.activeIndex -= 1
@@ -349,8 +365,8 @@ public struct ClipboardView: View {
             return nil
         }
         
-        // 9. Space (keyCode 49) or 'P' / 'p' (keyCode 35) -> Quick Look Preview
-        if event.keyCode == 49 || (!isCommand && (chars == "p" || chars == "P")) {
+        // 9. Space or Option+P -> Quick Look Preview
+        if event.keyCode == 49 || (isOption && !isCommand && (chars == "p" || chars == "P")) {
             if store.activeIndex >= 0 && store.activeIndex < store.filteredClips.count {
                 let clip = store.filteredClips[store.activeIndex]
                 NotificationCenter.default.post(name: .openPreviewWindow, object: clip)
@@ -358,8 +374,8 @@ public struct ClipboardView: View {
             }
         }
         
-        // 10. 'E' / 'e' (keyCode 14) -> Edit Clip
-        if !isCommand && (chars == "e" || chars == "E" || event.keyCode == 14) {
+        // 10. Option+E -> Edit Clip
+        if isOption && !isCommand && (chars == "e" || chars == "E" || event.keyCode == 14) {
             if store.activeIndex >= 0 && store.activeIndex < store.filteredClips.count {
                 let clip = store.filteredClips[store.activeIndex]
                 if clip.type != .image {
@@ -369,8 +385,8 @@ public struct ClipboardView: View {
             }
         }
         
-        // 11. 'R' / 'r' (keyCode 15) -> Rename Clip
-        if !isCommand && (chars == "r" || chars == "R" || event.keyCode == 15) {
+        // 11. Option+R -> Rename Clip
+        if isOption && !isCommand && (chars == "r" || chars == "R" || event.keyCode == 15) {
             if store.activeIndex >= 0 && store.activeIndex < store.filteredClips.count {
                 let clip = store.filteredClips[store.activeIndex]
                 renamingClip = clip
@@ -387,9 +403,9 @@ public struct ClipboardView: View {
             }
         }
         
-        // 12. 'Q' / 'q' (keyCode 12) -> Add to or remove from Paste Queue
-        let hasNoSpecialModifiers = event.modifierFlags.intersection([.command, .option, .control]).isEmpty
-        if hasNoSpecialModifiers && (chars == "q" || chars == "Q" || event.keyCode == 12) {
+        // 13. Option+Q -> Add to or remove from Paste Queue
+        if isOption && !isCommand && !event.modifierFlags.contains(.control) &&
+           (chars == "q" || chars == "Q" || event.keyCode == 12) {
             if store.activeIndex >= 0 && store.activeIndex < store.filteredClips.count {
                 let clip = store.filteredClips[store.activeIndex]
                 if PasteQueueManager.shared.contains(clipId: clip.id) {
@@ -741,15 +757,15 @@ public struct ClipboardView: View {
     
     private var wideFooterBar: some View {
         HStack(spacing: 12) {
-            shortcutHint("1-9", "Quick Paste")
+            shortcutHint("⌘1-9", "Quick Paste")
             shortcutHint(store.clipLayoutStyle == .compactList ? "↑ ↓" : "← →", "Navigate")
             shortcutHint("↵", "Paste")
             shortcutHint("⌥↵", "Plain Text")
             shortcutHint("Space", "Preview")
-            shortcutHint("R", "Rename Clip")
-            shortcutHint("Q", "Queue")
+            shortcutHint("⌥R", "Rename Clip")
+            shortcutHint("⌥Q", "Queue")
             shortcutHint("⌘F", "Search")
-            shortcutHint("E", "Edit")
+            shortcutHint("⌥E", "Edit")
             shortcutHint("⌘⌫", "Delete")
             shortcutHint("Esc", "Hide")
         }
@@ -759,7 +775,7 @@ public struct ClipboardView: View {
     
     private var mediumFooterBar: some View {
         HStack(spacing: 10) {
-            shortcutHint("1-9", "Quick Paste")
+            shortcutHint("⌘1-9", "Quick Paste")
             shortcutHint(store.clipLayoutStyle == .compactList ? "↑ ↓" : "← →", "Navigate")
             shortcutHint("↵", "Paste")
             shortcutHint("⌥↵", "Plain")

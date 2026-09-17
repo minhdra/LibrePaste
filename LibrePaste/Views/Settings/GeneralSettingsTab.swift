@@ -32,6 +32,7 @@ public struct GeneralSettingsTab: View {
     @State private var pasteQueueAutoHide: Bool = true
     @State private var playSoundOnPaste: Bool = true
     @State private var pasteSoundName: String = "Tink"
+    @State private var automaticUpdateChecks: Bool = true
     
     public init(store: ClipboardStore) {
         self.store = store
@@ -115,6 +116,11 @@ public struct GeneralSettingsTab: View {
                     .onChange(of: showInDock) { _, newValue in
                         store.saveSetting(key: "showInDock", value: newValue ? "true" : "false")
                         AppDelegate.shared?.updateDockVisibility(show: newValue)
+                    }
+
+                Toggle(L10n.tr("Automatically check for updates"), isOn: $automaticUpdateChecks)
+                    .onChange(of: automaticUpdateChecks) { _, newValue in
+                        store.saveSetting(key: "automaticUpdateChecks", value: newValue ? "true" : "false")
                     }
                 
                 HStack {
@@ -370,6 +376,7 @@ public struct GeneralSettingsTab: View {
         pasteQueueAutoHide = (store.settings["pasteQueueAutoHide"] ?? "true") == "true"
         playSoundOnPaste = (store.settings["playSoundOnPaste"] ?? "true") == "true"
         pasteSoundName = store.settings["pasteSoundName"] ?? "Tink"
+        automaticUpdateChecks = (store.settings["automaticUpdateChecks"] ?? "true") == "true"
         
         isAccessibilityEnabled = PasteSimulator.isAccessibilityGranted()
     }
