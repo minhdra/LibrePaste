@@ -144,7 +144,7 @@ public struct AboutSettingsTab: View {
             linkRow(
                 icon: "chevron.left.forwardslash.chevron.right",
                 title: L10n.tr("Source Code & GitHub"),
-                subtitle: L10n.tr("View repository and releases"),
+                subtitle: "github.com/minhdra/LibrePaste",
                 url: GitHubUpdateService.repositoryURL.absoluteString
             )
             
