@@ -330,10 +330,7 @@ public struct ClipboardView: View {
            !isOption,
            !event.modifierFlags.contains(.control),
            let typedText = event.characters,
-           typedText.unicodeScalars.contains(where: {
-               !CharacterSet.controlCharacters.contains($0) &&
-               !CharacterSet.whitespacesAndNewlines.contains($0)
-           }) {
+           containsSearchableText(typedText) {
             store.query.append(typedText)
             store.isSearchFocused = true
             return nil
@@ -418,6 +415,24 @@ public struct ClipboardView: View {
         }
         
         return event
+    }
+
+    /// AppKit exposes navigation and function keys as Unicode private-use
+    /// scalars (for example, Left Arrow is U+F702). Those values are not text
+    /// and must not trigger type-to-search.
+    private func containsSearchableText(_ text: String) -> Bool {
+        text.unicodeScalars.contains { scalar in
+            guard !CharacterSet.whitespacesAndNewlines.contains(scalar) else {
+                return false
+            }
+
+            switch scalar.properties.generalCategory {
+            case .control, .format, .surrogate, .privateUse, .unassigned:
+                return false
+            default:
+                return true
+            }
+        }
     }
     
     // MARK: - Header & Footer
